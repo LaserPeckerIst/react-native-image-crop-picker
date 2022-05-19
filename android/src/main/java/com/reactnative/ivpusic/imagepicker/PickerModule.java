@@ -368,6 +368,8 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
                 }
             } else if (mediaType.equals("video")) {
                 galleryIntent.setType("video/*");
+            } else if (mediaType.equals("text")) {
+                galleryIntent.setType("text/*");
             } else {
                 galleryIntent.setType("*/*");
                 String[] mimetypes = {"image/*", "video/*"};
@@ -498,8 +500,14 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
             getVideo(activity, path, mime);
             return;
         }
-
-        resultCollector.notifySuccess(getImage(activity, path));
+        if (mime != null && mime.startsWith("text/")) {
+            WritableMap map = new WritableNativeMap();
+            map.putString("path", "file://" + path);
+            map.putString("mime", mime);
+            resultCollector.notifySuccess(map);
+        } else {
+            resultCollector.notifySuccess(getImage(activity, path));
+        }
     }
 
     private Bitmap validateVideo(String path) throws Exception {
@@ -520,8 +528,7 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
             retriever.setDataSource(path);
 
             return Long.parseLong(retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION));
-        }
-        catch(Exception e) {
+        } catch (Exception e) {
             return -1L;
         }
     }
