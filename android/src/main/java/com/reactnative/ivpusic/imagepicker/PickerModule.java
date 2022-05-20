@@ -370,27 +370,27 @@ class PickerModule extends ReactContextBaseJavaModule implements ActivityEventLi
                 galleryIntent = new Intent(Intent.ACTION_PICK);
             } else {
                 galleryIntent = new Intent(Intent.ACTION_GET_CONTENT);
-            }
-
-            if (cropping || mediaType.equals("photo")) {
-                galleryIntent.setType("image/*");
-                if (cropping) {
-                    String[] mimetypes = {"image/jpeg", "image/png"};
+                if (cropping || mediaType.equals("photo")) {
+                    galleryIntent.setType("image/*");
+                    if (cropping) {
+                        String[] mimetypes = {"image/jpeg", "image/png"};
+                        galleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+                    }
+                } else if (mediaType.equals("video")) {
+                    galleryIntent.setType("video/*");
+                } else if (mediaType.equals("text")) {
+                    galleryIntent.setType("text/*");
+                } else {
+                    galleryIntent.setType("*/*");
+                    String[] mimetypes = {"image/*", "video/*"};
                     galleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
                 }
-            } else if (mediaType.equals("video")) {
-                galleryIntent.setType("video/*");
-            } else if (mediaType.equals("text")) {
-                galleryIntent.setType("text/*");
-            } else {
-                galleryIntent.setType("*/*");
-                String[] mimetypes = {"image/*", "video/*"};
-                galleryIntent.putExtra(Intent.EXTRA_MIME_TYPES, mimetypes);
+
+                galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
             }
 
             galleryIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             galleryIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple);
-            galleryIntent.addCategory(Intent.CATEGORY_OPENABLE);
 
             final Intent chooserIntent = Intent.createChooser(galleryIntent, "Pick an image");
             activity.startActivityForResult(chooserIntent, IMAGE_PICKER_REQUEST);
